@@ -1,0 +1,24 @@
+name: keepalive
+
+# GitHub disables scheduled workflows after 60 days without repo activity.
+# A tiny monthly commit keeps the watcher alive forever.
+on:
+  schedule:
+    - cron: '0 12 2 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  beat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          date -u > .heartbeat
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .heartbeat
+          git commit -m "keepalive heartbeat" || exit 0
+          git push

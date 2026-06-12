@@ -1,0 +1,55 @@
+name: snapback-watch
+
+# Two trade windows a day, NY time: London fade 2:00-5:00 AM and NY fade
+# 8:00-11:00 AM. Cron is UTC and can't follow DST, so each job starts early
+# enough and runs long enough (--for 325) to cover the window in both EDT
+# and EST, plus pre-window live candle building and post-window trade
+# tracking. Weekdays only — gold is closed on weekends.
+on:
+  schedule:
+    - cron: '40 4 * * 1-5'   # London fade: 04:40-10:05 UTC (window 06-09 EDT / 07-10 EST)
+    - cron: '40 10 * * 1-5'  # NY fade:     10:40-16:05 UTC (window 12-15 EDT / 13-16 EST)
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'just send a Telegram test message and exit'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      SIGNALS_PATH: signals.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - name: send test message
+        if: ${{ inputs.test }}
+        run: node alert.js --test
+      - name: watch the session
+        if: ${{ !inputs.test }}
+        run: node alert.js --quiet --for 325
+      - name: publish fired alerts to the dashboard
+        if: ${{ !inputs.test && always() }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add signals.json || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "record fired alerts"
+          git pull --rebase origin main
+          git push

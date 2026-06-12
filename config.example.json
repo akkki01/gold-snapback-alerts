@@ -1,0 +1,7 @@
+{
+  "botToken": "PASTE-TOKEN-HERE",
+  "chatId": "PASTE-CHAT-ID-HERE",
+  "balance": 10000,
+  "riskPct": 1,
+  "pollSeconds": 5
+}

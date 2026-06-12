@@ -1,0 +1,8 @@
+{
+  "name": "gold-snapback",
+  "private": true,
+  "description": "XAUUSD range-fade strategy: backtest, live Telegram alerts, dashboard",
+  "dependencies": {
+    "dukascopy-node": "^1.46.4"
+  }
+}

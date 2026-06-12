@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gold Snapback — Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>🪤 Gold Snapback</h1>
+    <p class="sub">XAUUSD range-fade · London 2–5 AM · NY 8–11 AM (New York time)</p>
+  </div>
+  <div class="liveBox">
+    <div class="price" id="livePrice">—</div>
+    <div class="sub" id="liveWhen">live gold price</div>
+    <div class="sub" id="nextWindow">—</div>
+  </div>
+</header>
+
+<section class="cards" id="cards"></section>
+
+<section class="panel">
+  <h2>Equity curve <span class="sub" id="spanLabel"></span></h2>
+  <canvas id="equity" height="220"></canvas>
+</section>
+
+<div class="cols">
+  <section class="panel">
+    <h2>Month by month</h2>
+    <canvas id="months" height="180"></canvas>
+  </section>
+  <section class="panel">
+    <h2>Live alerts <span class="sub">(from the cloud watcher)</span></h2>
+    <div id="signals" class="scroll"><p class="sub">No live alerts recorded yet — they appear here once the cloud watcher fires.</p></div>
+  </section>
+</div>
+
+<section class="panel">
+  <h2>Backtest trades</h2>
+  <div class="scroll tall"><table id="trades">
+    <thead><tr><th>Date (NY)</th><th>Window</th><th>Side</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th><th>Result</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</section>
+
+<footer class="sub">Backtest uses honest rules (entry at close, $0.40 spread, worst-case fills). Past results do not guarantee future results.</footer>
+<script src="app.js"></script>
+</body>
+</html>
